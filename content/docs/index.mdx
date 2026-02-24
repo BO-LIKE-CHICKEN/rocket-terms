@@ -1,0 +1,19 @@
+---
+title: 문서 센터
+description: Rocket Terms 문서 구조와 운영 방법
+---
+
+## 목적
+
+이 저장소는 앱별 `이용약관`과 `개인정보 처리방침` 문서를 버전 단위로 관리하고 공개하기 위한 MDX 문서 허브입니다.
+
+## 문서 위치
+
+- `/docs/apps/<app>/<terms|privacy>/<version>`
+- 예시: `/docs/apps/rocket-chat/terms/1.1.0`
+
+## 운영 규칙
+
+1. 새 정책 공개 시 기존 파일을 덮어쓰지 않고 새 버전 파일을 추가합니다.
+2. `version`과 `effectiveDate`를 frontmatter에 반드시 기록합니다.
+3. 앱 홈(`/`)에서 각 문서 타입의 최신 버전을 자동으로 노출합니다.
