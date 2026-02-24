@@ -1,6 +1,7 @@
-import { RootProvider } from 'fumadocs-ui/provider/next';
 import './global.css';
 import { Bitter, IBM_Plex_Sans } from 'next/font/google';
+import type { Metadata } from 'next';
+import type { ReactNode } from 'react';
 
 const bodyFont = IBM_Plex_Sans({
   subsets: ['latin'],
@@ -14,15 +15,37 @@ const headingFont = Bitter({
   variable: '--font-heading',
 });
 
-export default function Layout({ children }: LayoutProps<'/'>) {
+interface RootLayoutProps {
+  children: ReactNode;
+}
+
+export const metadata: Metadata = {
+  title: 'One More Floor - Privacy Policy',
+  description: 'One More Floor 개인정보 처리방침 버전 문서',
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+      'max-image-preview': 'none',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
+};
+
+export default function Layout({ children }: RootLayoutProps) {
   return (
     <html
       lang="ko"
       className={`${bodyFont.variable} ${headingFont.variable}`}
       suppressHydrationWarning
     >
-      <body className="flex min-h-screen flex-col bg-[#f4efe6] text-zinc-900 antialiased">
-        <RootProvider>{children}</RootProvider>
+      <body className="flex min-h-screen flex-col antialiased">
+        {children}
       </body>
     </html>
   );

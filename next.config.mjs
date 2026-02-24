@@ -1,20 +1,26 @@
-import { createMDX } from 'fumadocs-mdx/next';
-
-const withMDX = createMDX();
-
 /** @type {import('next').NextConfig} */
+const basePathEnv = process.env.NEXT_BASE_PATH ?? '';
+const normalizedBasePath =
+  basePathEnv === '' || basePathEnv === '/'
+    ? ''
+    : basePathEnv.startsWith('/')
+      ? basePathEnv
+      : `/${basePathEnv}`;
+
 const config = {
-  serverExternalPackages: ['@takumi-rs/image-response'],
-  
   reactStrictMode: true,
-  async rewrites() {
-    return [
-      {
-        source: '/docs/:path*.mdx',
-        destination: '/llms.mdx/docs/:path*',
-      },
-    ];
+  output: 'export',
+  trailingSlash: true,
+  skipTrailingSlashRedirect: true,
+  images: {
+    unoptimized: true,
   },
+  ...(normalizedBasePath
+    ? {
+        basePath: normalizedBasePath,
+        assetPrefix: normalizedBasePath,
+      }
+    : {}),
 };
 
-export default withMDX(config);
+export default config;
