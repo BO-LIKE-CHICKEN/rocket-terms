@@ -1,3 +1,12 @@
+@font-face {
+  font-family: 'Pretendard';
+  font-style: normal;
+  font-weight: 45 920;
+  font-display: swap;
+  src: url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/woff2/PretendardVariable.woff2')
+    format('woff2');
+}
+
 :root {
   --ink: #1f262e;
   --muted: #64707d;
@@ -20,7 +29,7 @@ body {
 body {
   color: var(--ink);
   font-family:
-    var(--font-body),
+    'Pretendard',
     'Apple SD Gothic Neo',
     'Noto Sans KR',
     sans-serif;
@@ -30,11 +39,9 @@ body {
 h1,
 h2,
 h3 {
-  font-family:
-    var(--font-heading),
-    'Iowan Old Style',
-    'Times New Roman',
-    serif;
+  font-family: inherit;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .policy-shell {

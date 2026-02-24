@@ -1,19 +1,6 @@
 import './global.css';
-import { Bitter, IBM_Plex_Sans } from 'next/font/google';
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-
-const bodyFont = IBM_Plex_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-body',
-});
-
-const headingFont = Bitter({
-  subsets: ['latin'],
-  weight: ['500', '700', '800'],
-  variable: '--font-heading',
-});
 
 interface RootLayoutProps {
   children: ReactNode;
@@ -39,11 +26,7 @@ export const metadata: Metadata = {
 
 export default function Layout({ children }: RootLayoutProps) {
   return (
-    <html
-      lang="ko"
-      className={`${bodyFont.variable} ${headingFont.variable}`}
-      suppressHydrationWarning
-    >
+    <html lang="ko" suppressHydrationWarning>
       <body className="flex min-h-screen flex-col antialiased">
         {children}
       </body>
