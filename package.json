@@ -8,7 +8,8 @@
     "start": "next start",
     "types:check": "tsc --noEmit",
     "lint": "eslint",
-    "add-version": "node scripts/add-version.mjs"
+    "add-version": "node scripts/add-version.mjs",
+    "pages:sync-domain": "bash scripts/sync-pages-domain.sh"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",

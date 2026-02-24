@@ -62,7 +62,10 @@ content/docs/apps/<app-slug>/<terms|privacy>/<version>.mdx
 - 앱은 완전 정적 출력(Static Export)으로 배포한다.
 - 빌드 결과물은 정적 파일(`out/`)만 사용하며 서버 런타임 의존성을 두지 않는다.
 - 버전 페이지는 빌드 시점에 정적 생성한다.
-- GitHub Pages 배포 시 `NEXT_BASE_PATH`로 경로를 제어한다.
+- GitHub Pages 배포 시 기본 경로는 `/<repo-name>`이다.
+- Repository Variable `PAGES_CUSTOM_DOMAIN`가 설정되면 `basePath`는 자동으로 `/`를 사용한다.
+- 커스텀 도메인 사용 시 빌드 산출물에 `CNAME` 파일을 포함한다.
+- Pages API를 통해 custom domain(`cname`) 및 HTTPS 강제(`https_enforced`)를 자동 동기화한다.
 
 ## 8. 검색엔진 비노출 정책
 

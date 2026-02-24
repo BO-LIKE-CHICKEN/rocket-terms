@@ -35,10 +35,24 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
-      - name: Build static site
+      - name: Resolve Pages base path and custom domain
         env:
-          NEXT_BASE_PATH: ${{ vars.NEXT_BASE_PATH || format('/{0}', github.event.repository.name) }}
+          CUSTOM_DOMAIN: ${{ vars.PAGES_CUSTOM_DOMAIN || '' }}
+        run: |
+          if [ -n "$CUSTOM_DOMAIN" ]; then
+            echo "NEXT_BASE_PATH=/" >> "$GITHUB_ENV"
+            echo "PAGES_CUSTOM_DOMAIN=$CUSTOM_DOMAIN" >> "$GITHUB_ENV"
+          else
+            echo "NEXT_BASE_PATH=/${{ github.event.repository.name }}" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build static site
         run: yarn build
+
+      - name: Write CNAME for custom domain
+        if: env.PAGES_CUSTOM_DOMAIN != ''
+        run: |
+          echo "$PAGES_CUSTOM_DOMAIN" > out/CNAME
 
       - name: Disable Jekyll processing
         run: touch out/.nojekyll
@@ -47,6 +61,16 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: out
+
+      - name: Sync custom domain + HTTPS (best effort)
+        if: env.PAGES_CUSTOM_DOMAIN != ''
+        env:
+          GH_TOKEN: ${{ secrets.PAGES_ADMIN_TOKEN || github.token }}
+        run: |
+          bash scripts/sync-pages-domain.sh \
+            --domain "$PAGES_CUSTOM_DOMAIN" \
+            --repo "${{ github.repository }}" \
+            --best-effort
 
   deploy:
     runs-on: ubuntu-latest
@@ -59,4 +83,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-

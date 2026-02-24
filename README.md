@@ -57,12 +57,38 @@ content/docs/apps/one-more-floor/privacy/*.mdx
 - 워크플로: `.github/workflows/deploy-pages.yml`
 - `main` 브랜치 push 시 `out/` 정적 산출물을 GitHub Pages로 배포
 - 기본 `basePath`: `/<repo-name>`
+- 커스텀 도메인 설정 시 자동으로 `basePath=/` 전환 + `out/CNAME` 생성
 
-커스텀 도메인 루트(`/`)로 배포할 경우, GitHub Repository Variables에 아래를 설정:
+### 커스텀 도메인 + HTTPS 강제 준비 상태
+
+아래만 설정하면, 이후 배포 시 도메인 바인딩과 HTTPS 강제를 자동 시도합니다.
+
+1. Repository Variable 추가
 
 ```text
-NEXT_BASE_PATH=/
+PAGES_CUSTOM_DOMAIN=<your-domain>
 ```
+
+2. (권장) Repository Secret 추가  
+`PAGES_ADMIN_TOKEN`: Pages 설정 API 권한이 있는 토큰  
+토큰 권한은 GitHub Pages API 요구사항(`Pages:write`, `Administration:write`)을 따라야 합니다.
+
+3. `main` 브랜치로 push
+
+자동으로 실행되는 것:
+
+- 정적 빌드 시 커스텀 도메인용 `basePath=/` 적용
+- `out/CNAME` 생성
+- Pages API로 `cname`와 `https_enforced=true` 적용 시도
+- 인증서 발급 지연 시 `.github/workflows/sync-pages-domain.yml`가 매시간 재시도
+
+### 도메인 전달 후 즉시 수동 동기화
+
+```bash
+yarn pages:sync-domain -- --domain <your-domain> --repo <owner/repo>
+```
+
+또는 Actions에서 `Sync Pages Custom Domain` 워크플로를 수동 실행해도 됩니다.
 
 ## 새 버전 추가
 

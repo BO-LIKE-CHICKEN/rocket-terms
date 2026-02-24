@@ -1,0 +1,47 @@
+name: Sync Pages Custom Domain
+
+on:
+  workflow_dispatch:
+    inputs:
+      domain:
+        description: Custom domain (leave empty to use repository variable PAGES_CUSTOM_DOMAIN)
+        required: false
+        type: string
+  schedule:
+    - cron: '17 * * * *'
+
+permissions:
+  contents: read
+  pages: write
+
+jobs:
+  sync-domain:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve target domain
+        env:
+          INPUT_DOMAIN: ${{ github.event.inputs.domain || '' }}
+          DEFAULT_DOMAIN: ${{ vars.PAGES_CUSTOM_DOMAIN || '' }}
+        run: |
+          if [ -n "$INPUT_DOMAIN" ]; then
+            echo "TARGET_DOMAIN=$INPUT_DOMAIN" >> "$GITHUB_ENV"
+          elif [ -n "$DEFAULT_DOMAIN" ]; then
+            echo "TARGET_DOMAIN=$DEFAULT_DOMAIN" >> "$GITHUB_ENV"
+          else
+            echo "No domain input and no PAGES_CUSTOM_DOMAIN variable. Skipping."
+          fi
+
+      - name: Sync custom domain + HTTPS (best effort)
+        if: env.TARGET_DOMAIN != ''
+        env:
+          GH_TOKEN: ${{ secrets.PAGES_ADMIN_TOKEN || github.token }}
+        run: |
+          bash scripts/sync-pages-domain.sh \
+            --domain "$TARGET_DOMAIN" \
+            --repo "${{ github.repository }}" \
+            --best-effort
+
