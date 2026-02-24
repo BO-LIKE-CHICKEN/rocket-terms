@@ -9,17 +9,16 @@ import {
   selectPolicyDate,
 } from '@/lib/policy-doc';
 
-export default async function HomePage() {
+export default async function PrivacyLatestPage() {
   const policyDates = await getPolicyDates();
   const versionMap = await getPolicyVersionMap();
+  const selectedPolicyDate = (await selectPolicyDate()) ?? policyDates[0];
 
-  if (policyDates.length === 0) {
+  if (!selectedPolicyDate) {
     notFound();
   }
 
-  const selectedPolicyDate = (await selectPolicyDate()) ?? policyDates[0];
   const doc = await getPolicyDoc(selectedPolicyDate);
-
   if (!doc) {
     notFound();
   }

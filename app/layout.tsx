@@ -20,8 +20,8 @@ interface RootLayoutProps {
 }
 
 export const metadata: Metadata = {
-  title: 'One More Floor - Privacy Policy',
-  description: 'One More Floor 개인정보 처리방침 버전 문서',
+  title: '한층한층 개인정보 처리방침',
+  description: '한층한층 앱 개인정보 처리방침 문서',
   robots: {
     index: false,
     follow: false,

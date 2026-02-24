@@ -6,20 +6,31 @@ import {
   getPolicyDoc,
   getPolicyVersionMap,
   markdownToHtml,
-  selectPolicyDate,
 } from '@/lib/policy-doc';
 
-export default async function HomePage() {
+interface PrivacyPolicyDatePageProps {
+  params: Promise<{
+    policyDate: string;
+  }>;
+}
+
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+  const policyDates = await getPolicyDates();
+  return policyDates.map((policyDate) => ({ policyDate }));
+}
+
+export default async function PrivacyPolicyDatePage({ params }: PrivacyPolicyDatePageProps) {
+  const { policyDate } = await params;
   const policyDates = await getPolicyDates();
   const versionMap = await getPolicyVersionMap();
 
-  if (policyDates.length === 0) {
+  if (!policyDates.includes(policyDate)) {
     notFound();
   }
 
-  const selectedPolicyDate = (await selectPolicyDate()) ?? policyDates[0];
-  const doc = await getPolicyDoc(selectedPolicyDate);
-
+  const doc = await getPolicyDoc(policyDate);
   if (!doc) {
     notFound();
   }
@@ -31,7 +42,7 @@ export default async function HomePage() {
       doc={doc}
       html={html}
       policyDates={policyDates}
-      selectedPolicyDate={selectedPolicyDate}
+      selectedPolicyDate={policyDate}
       versionMap={versionMap}
     />
   );

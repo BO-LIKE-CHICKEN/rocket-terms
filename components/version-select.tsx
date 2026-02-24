@@ -2,29 +2,29 @@
 
 import { useRouter } from 'next/navigation';
 
-import { getPolicyVersionPath } from '@/lib/policy-route';
+import { getPolicyDatePath } from '@/lib/policy-route';
 
 interface VersionSelectProps {
-  versions: string[];
+  dates: string[];
   value: string;
 }
 
-export default function VersionSelect({ versions, value }: VersionSelectProps) {
+export default function VersionSelect({ dates, value }: VersionSelectProps) {
   const router = useRouter();
 
   return (
     <label className="version-select-wrap">
-      <span className="version-select-label">버전</span>
+      <span className="version-select-label">정책 날짜</span>
       <select
         className="version-select"
         value={value}
         onChange={(event) => {
-          router.replace(getPolicyVersionPath(event.target.value), { scroll: false });
+          router.replace(getPolicyDatePath(event.target.value), { scroll: false });
         }}
       >
-        {versions.map((version) => (
-          <option key={version} value={version}>
-            v{version}
+        {dates.map((date) => (
+          <option key={date} value={date}>
+            {date}
           </option>
         ))}
       </select>

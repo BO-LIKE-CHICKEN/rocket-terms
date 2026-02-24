@@ -3,24 +3,16 @@ import path from 'node:path';
 
 import semver from 'semver';
 
-const KIND_LABEL = {
-  terms: '이용약관',
-  privacy: '개인정보 처리방침',
-};
-const KIND_ORDER = ['terms', 'privacy'];
-
-function toYamlString(value) {
-  return JSON.stringify(String(value));
-}
+const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 function usage() {
   console.log(
     [
       'Usage:',
-      '  npm run add-version -- --app <slug> --kind <terms|privacy> --version <x.y.z> --effective-date <YYYY-MM-DD> [--title <text>] [--description <text>]',
+      '  yarn add-version -- --min-app-version <x.y.z> --policy-date <YYYY-MM-DD> [--effective-date <YYYY-MM-DD>] [--title <text>] [--description <text>]',
       '',
       'Example:',
-      '  npm run add-version -- --app rocket-chat --kind terms --version 1.2.0 --effective-date 2026-03-01',
+      '  yarn add-version -- --min-app-version 1.1.0 --policy-date 2026-04-01 --effective-date 2026-04-01',
     ].join('\n'),
   );
 }
@@ -45,21 +37,17 @@ function parseArgs(argv) {
   return args;
 }
 
-function normalizeSlug(value) {
-  return String(value)
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9-]/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
+function asString(value) {
+  return JSON.stringify(String(value));
 }
 
-function toAppName(slug) {
-  return slug
-    .split('-')
-    .filter(Boolean)
-    .map((part) => part[0].toUpperCase() + part.slice(1))
-    .join(' ');
+async function readJson(filePath, fallback) {
+  try {
+    const source = await fs.readFile(filePath, 'utf-8');
+    return JSON.parse(source);
+  } catch {
+    return fallback;
+  }
 }
 
 async function pathExists(targetPath) {
@@ -71,113 +59,100 @@ async function pathExists(targetPath) {
   }
 }
 
-async function readJson(filePath, fallback) {
-  if (!(await pathExists(filePath))) {
-    return fallback;
+function compareMapEntryDesc(left, right) {
+  const leftValid = semver.valid(left.minAppVersion) !== null;
+  const rightValid = semver.valid(right.minAppVersion) !== null;
+
+  if (leftValid && rightValid) {
+    return semver.rcompare(left.minAppVersion, right.minAppVersion);
   }
 
-  const source = await fs.readFile(filePath, 'utf-8');
-  return JSON.parse(source);
-}
+  if (leftValid) return -1;
+  if (rightValid) return 1;
 
-async function writeJson(filePath, data) {
-  await fs.writeFile(filePath, `${JSON.stringify(data, null, 2)}\n`, 'utf-8');
-}
-
-function sortVersionPages(pages) {
-  return [...new Set(pages)].sort((left, right) => {
-    const leftValid = semver.valid(left) !== null;
-    const rightValid = semver.valid(right) !== null;
-
-    if (leftValid && rightValid) {
-      return semver.rcompare(left, right);
-    }
-
-    if (leftValid) return -1;
-    if (rightValid) return 1;
-
-    return right.localeCompare(left, undefined, {
-      numeric: true,
-      sensitivity: 'base',
-    });
+  return right.minAppVersion.localeCompare(left.minAppVersion, undefined, {
+    numeric: true,
+    sensitivity: 'base',
   });
+}
+
+function validateDate(value, fieldName) {
+  if (!DATE_PATTERN.test(value)) {
+    console.error(`\`${fieldName}\` must be in YYYY-MM-DD format.`);
+    process.exit(1);
+  }
 }
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
 
-  const app = normalizeSlug(args.app);
-  const kind = args.kind ?? args.doc;
-  const version = String(args.version ?? '').trim();
-  const effectiveDate = String(args['effective-date'] ?? args.effectiveDate ?? '').trim();
+  const minAppVersion = String(
+    args['min-app-version'] ?? args.minAppVersion ?? '',
+  ).trim();
+  const policyDate = String(args['policy-date'] ?? args.policyDate ?? args.date ?? '').trim();
+  const effectiveDate = String(
+    args['effective-date'] ?? args.effectiveDate ?? policyDate,
+  ).trim();
 
-  if (!app || !kind || !version || !effectiveDate) {
+  if (!minAppVersion || !policyDate) {
     usage();
     process.exit(1);
   }
 
-  if (!['terms', 'privacy'].includes(kind)) {
-    console.error('`--kind` must be either `terms` or `privacy`.');
+  if (!semver.valid(minAppVersion)) {
+    console.error('`--min-app-version` must be a valid semver (e.g. 1.2.0).');
     process.exit(1);
   }
+
+  validateDate(policyDate, '--policy-date');
+  validateDate(effectiveDate, '--effective-date');
 
   const root = process.cwd();
-  const appsDir = path.join(root, 'content', 'docs', 'apps');
-  const appDir = path.join(appsDir, app);
-  const kindDir = path.join(appDir, kind);
-  const mdxPath = path.join(kindDir, `${version}.mdx`);
+  const versionsDir = path.join(root, 'docs', 'policies', 'privacy', 'versions');
+  const versionMapPath = path.join(root, 'docs', 'policies', 'privacy', 'version-map.json');
+  const mdxPath = path.join(versionsDir, `${policyDate}.mdx`);
 
-  await fs.mkdir(kindDir, { recursive: true });
+  await fs.mkdir(versionsDir, { recursive: true });
 
   if (await pathExists(mdxPath)) {
-    console.error(`Version already exists: ${mdxPath}`);
+    console.error(`Policy file already exists: ${path.relative(root, mdxPath)}`);
     process.exit(1);
   }
 
-  const title = args.title?.trim() || `${toAppName(app)} ${KIND_LABEL[kind]}`;
-  const description =
-    args.description?.trim() || `${toAppName(app)} ${KIND_LABEL[kind]} ${version}`;
+  const title = String(args.title ?? '개인정보 처리방침').trim();
+  const description = String(args.description ?? '한층한층 개인정보 처리방침').trim();
 
-  const content = `---\ntitle: ${toYamlString(title)}\ndescription: ${toYamlString(description)}\napp: ${toYamlString(app)}\nkind: ${toYamlString(kind)}\nversion: ${toYamlString(version)}\neffectiveDate: ${toYamlString(effectiveDate)}\n---\n\n## 변경 사항\n\n- 여기에 변경 사항을 기록하세요.\n`;
+  const mdxSource = `---\ntitle: ${asString(title)}\ndescription: ${asString(description)}\npolicyDate: ${asString(policyDate)}\neffectiveDate: ${asString(effectiveDate)}\n---\n\n## 변경 사항\n\n- 여기에 변경 사항을 기록하세요.\n`;
 
-  await fs.writeFile(mdxPath, content, 'utf-8');
+  await fs.writeFile(mdxPath, mdxSource, 'utf-8');
 
-  const appsMetaPath = path.join(appsDir, 'meta.json');
-  const appMetaPath = path.join(appDir, 'meta.json');
-  const kindMetaPath = path.join(kindDir, 'meta.json');
+  const versionMap = await readJson(versionMapPath, []);
+  if (!Array.isArray(versionMap)) {
+    console.error(`Invalid JSON format: ${path.relative(root, versionMapPath)}`);
+    process.exit(1);
+  }
 
-  const appsMeta = await readJson(appsMetaPath, {
-    title: '앱 문서',
-    pages: [],
-  });
-  appsMeta.pages = [...new Set([...(appsMeta.pages ?? []), app])].sort();
-
-  const appMeta = await readJson(appMetaPath, {
-    title: toAppName(app),
-    pages: ['terms', 'privacy'],
-  });
-  appMeta.title = appMeta.title || toAppName(app);
-  appMeta.pages = [...new Set([...(appMeta.pages ?? []), kind])].sort(
-    (left, right) => KIND_ORDER.indexOf(left) - KIND_ORDER.indexOf(right),
+  const duplicatedMinVersion = versionMap.find(
+    (entry) => entry && entry.minAppVersion === minAppVersion,
   );
+  if (duplicatedMinVersion) {
+    console.error(
+      `Mapping for minAppVersion ${minAppVersion} already exists (${duplicatedMinVersion.policyDate}).`,
+    );
+    process.exit(1);
+  }
 
-  const kindMeta = await readJson(kindMetaPath, {
-    title: KIND_LABEL[kind],
-    pages: [],
-  });
-  kindMeta.title = kindMeta.title || KIND_LABEL[kind];
-  kindMeta.pages = sortVersionPages([...(kindMeta.pages ?? []), version]);
-
-  await Promise.all([
-    writeJson(appsMetaPath, appsMeta),
-    writeJson(appMetaPath, appMeta),
-    writeJson(kindMetaPath, kindMeta),
-  ]);
+  const nextVersionMap = [...versionMap, { minAppVersion, policyDate }].sort(
+    compareMapEntryDesc,
+  );
+  await fs.writeFile(versionMapPath, `${JSON.stringify(nextVersionMap, null, 2)}\n`, 'utf-8');
 
   console.log(`Created: ${path.relative(root, mdxPath)}`);
+  console.log(`Updated: ${path.relative(root, versionMapPath)}`);
 }
 
 main().catch((error) => {
   console.error(error);
   process.exit(1);
 });
+

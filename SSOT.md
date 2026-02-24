@@ -4,17 +4,26 @@
 
 ## 1. 문서 저장 구조
 
-모든 약관/개인정보 문서는 아래 경로를 따른다.
+개인정보 처리방침 문서는 아래 경로를 따른다.
 
 ```text
-content/docs/apps/<app-slug>/<terms|privacy>/<version>.mdx
+docs/policies/privacy/versions/<policy-date>.mdx
 ```
 
-## 2. 현재 앱 식별자 규칙
+여기서 `policy-date`는 `YYYY-MM-DD` 형식이다.
 
-- 현재 실서비스 앱 슬러그: `one-more-floor`
-- 한층한층 개인정보 처리방침 경로: `content/docs/apps/one-more-floor/privacy/1.0.0.mdx`
-- 추후 앱이 추가되면 `content/docs/apps/<new-app-slug>/...` 형태로 병렬 추가한다.
+## 2. 버전 매핑 파일
+
+앱 마케팅 버전(`CFBundleShortVersionString`)과 정책 날짜의 매핑은 아래 파일에 저장한다.
+
+```text
+docs/policies/privacy/version-map.json
+```
+
+매핑 스키마:
+
+- `minAppVersion`: 해당 정책이 적용되는 최소 앱 버전(semver)
+- `policyDate`: 노출할 정책 날짜(`YYYY-MM-DD`)
 
 ## 3. Frontmatter 필수 항목
 
@@ -22,16 +31,14 @@ content/docs/apps/<app-slug>/<terms|privacy>/<version>.mdx
 
 - `title`
 - `description`
-- `app`
-- `kind` (`terms` 또는 `privacy`)
-- `version` (semver 권장)
+- `policyDate` (`YYYY-MM-DD`)
 - `effectiveDate` (`YYYY-MM-DD`)
 
-## 4. 버전 운영 규칙
+## 4. 버전 선택 규칙
 
-- 기존 버전 파일은 수정/덮어쓰기보다 새 버전 파일 추가를 우선한다.
-- 버전은 semver 기준으로 최신 버전을 판별한다.
-- 루트 문서 뷰는 `content/docs/apps/one-more-floor/privacy/*.mdx` 파일 집합을 기준으로 렌더링한다.
+- 입력 앱 버전 기준으로, `minAppVersion <= 앱 버전` 조건을 만족하는 매핑 중 가장 큰 `minAppVersion`의 `policyDate`를 선택한다.
+- 매핑이 하나도 없으면 정책 날짜 파일 중 최신 날짜를 기본 정책으로 사용한다.
+- 기존 정책 파일을 수정/덮어쓰기보다 새 날짜 파일 추가를 우선한다.
 
 ## 5. 작업 절차 규칙 (중요)
 
@@ -45,17 +52,18 @@ content/docs/apps/<app-slug>/<terms|privacy>/<version>.mdx
 
 ## 6. 사용자 노출 정책
 
-- 현재 공개 대상 앱은 `one-more-floor`이며, 다른 앱 문서는 사용자 노출 대상이 아니다.
-- 사용자에게 실제로 노출하는 문서 범위는 `one-more-floor/privacy`만 허용한다.
+- 사용자에게 실제로 노출하는 문서 범위는 `privacy`만 허용한다.
 - 루트(`/`)는 최신 개인정보 처리방침 1건만 노출한다.
-- 버전별 고정 경로는 아래 구조를 따른다.
+- 정책 날짜별 고정 경로는 아래 구조를 따른다.
 
 ```text
-/docs/apps/one-more-floor/privacy/<version>/
+/policies/privacy/<policy-date>/
 ```
 
-- 버전 전환 UI는 상단 셀렉트 박스 하나만 제공하며, 선택 시 같은 문서의 다른 버전 경로로 이동한다.
-- `/docs/apps/one-more-floor/privacy/` 경로는 최신 버전을 노출하는 고정 진입점으로 사용한다.
+- 버전 전환 UI는 상단 셀렉트 박스 하나만 제공하며, 선택 시 같은 문서의 다른 정책 날짜 경로로 이동한다.
+- `/policies/privacy/` 경로는 최신 정책을 노출하는 고정 진입점으로 사용한다.
+- `/policies/privacy/?appVersion=<x.y.z>`로 진입하면 버전 매핑 규칙에 따라 정책 날짜 경로로 연결한다.
+- 공개 URL 기준 도메인은 `https://one-more-floor.com`을 사용한다.
 
 ## 7. 배포/정적 출력 정책
 
