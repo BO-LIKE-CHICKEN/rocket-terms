@@ -9,7 +9,8 @@
     "types:check": "tsc --noEmit",
     "lint": "eslint",
     "add-version": "node scripts/add-version.mjs",
-    "pages:sync-domain": "bash scripts/sync-pages-domain.sh"
+    "pages:sync-domain": "bash scripts/sync-pages-domain.sh",
+    "pages:prepare-one-more-floor": "gh variable set PAGES_CUSTOM_DOMAIN --body one-more-floor.com && bash scripts/sync-pages-domain.sh --domain one-more-floor.com --best-effort"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",

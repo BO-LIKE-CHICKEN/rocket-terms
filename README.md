@@ -90,6 +90,12 @@ yarn pages:sync-domain -- --domain <your-domain> --repo <owner/repo>
 
 또는 Actions에서 `Sync Pages Custom Domain` 워크플로를 수동 실행해도 됩니다.
 
+`one-more-floor.com` 고정으로 한 번에 준비하려면:
+
+```bash
+yarn pages:prepare-one-more-floor
+```
+
 ## 새 버전 추가
 
 ```bash
