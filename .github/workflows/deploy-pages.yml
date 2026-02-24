@@ -39,13 +39,24 @@ jobs:
 
       - name: Resolve Pages base path and custom domain
         env:
-          CUSTOM_DOMAIN: ${{ vars.PAGES_CUSTOM_DOMAIN || '' }}
+          CUSTOM_DOMAIN_VAR: ${{ vars.PAGES_CUSTOM_DOMAIN || '' }}
+          GH_TOKEN: ${{ github.token }}
         run: |
-          if [ -n "$CUSTOM_DOMAIN" ]; then
+          if [ -n "$CUSTOM_DOMAIN_VAR" ]; then
             echo "NEXT_BASE_PATH=/" >> "$GITHUB_ENV"
-            echo "PAGES_CUSTOM_DOMAIN=$CUSTOM_DOMAIN" >> "$GITHUB_ENV"
+            echo "PAGES_CUSTOM_DOMAIN=$CUSTOM_DOMAIN_VAR" >> "$GITHUB_ENV"
           else
-            echo "NEXT_BASE_PATH=/${{ github.event.repository.name }}" >> "$GITHUB_ENV"
+            DETECTED_CNAME=""
+            if command -v gh >/dev/null 2>&1; then
+              DETECTED_CNAME="$(gh api "repos/${{ github.repository }}/pages" --jq '.cname // ""' 2>/dev/null || true)"
+            fi
+
+            if [ -n "$DETECTED_CNAME" ] && [ "$DETECTED_CNAME" != "null" ]; then
+              echo "NEXT_BASE_PATH=/" >> "$GITHUB_ENV"
+              echo "PAGES_CUSTOM_DOMAIN=$DETECTED_CNAME" >> "$GITHUB_ENV"
+            else
+              echo "NEXT_BASE_PATH=/${{ github.event.repository.name }}" >> "$GITHUB_ENV"
+            fi
           fi
 
       - name: Build static site
