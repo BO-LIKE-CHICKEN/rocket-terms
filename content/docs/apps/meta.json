@@ -1,4 +1,8 @@
 {
   "title": "앱 문서",
-  "pages": ["rocket-chat", "star-fitness"]
+  "pages": [
+    "one-more-floor",
+    "rocket-chat",
+    "star-fitness"
+  ]
 }
