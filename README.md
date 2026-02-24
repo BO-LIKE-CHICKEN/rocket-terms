@@ -10,8 +10,8 @@
 ## 시작하기
 
 ```bash
-npm install
-npm run dev
+yarn install
+yarn dev
 ```
 
 브라우저에서 `http://localhost:3000` 접속.
@@ -50,7 +50,7 @@ effectiveDate: "2026-02-20"
 ## 새 버전 추가
 
 ```bash
-npm run add-version -- \
+yarn add-version \
   --app rocket-chat \
   --kind terms \
   --version 1.2.0 \

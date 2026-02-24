@@ -7,6 +7,7 @@ const KIND_LABEL = {
   terms: '이용약관',
   privacy: '개인정보 처리방침',
 };
+const KIND_ORDER = ['terms', 'privacy'];
 
 function toYamlString(value) {
   return JSON.stringify(String(value));
@@ -156,7 +157,9 @@ async function main() {
     pages: ['terms', 'privacy'],
   });
   appMeta.title = appMeta.title || toAppName(app);
-  appMeta.pages = [...new Set([...(appMeta.pages ?? []), kind])];
+  appMeta.pages = [...new Set([...(appMeta.pages ?? []), kind])].sort(
+    (left, right) => KIND_ORDER.indexOf(left) - KIND_ORDER.indexOf(right),
+  );
 
   const kindMeta = await readJson(kindMetaPath, {
     title: KIND_LABEL[kind],

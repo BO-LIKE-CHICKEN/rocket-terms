@@ -36,5 +36,6 @@
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3"
   },
-  "description": "Versioned terms and privacy policy docs site with Fumadocs"
+  "description": "Versioned terms and privacy policy docs site with Fumadocs",
+  "packageManager": "yarn@4.12.0"
 }
