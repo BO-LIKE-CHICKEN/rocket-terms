@@ -13,6 +13,7 @@
 - 정책 최신 진입점: `/policies/privacy/`
 - 정책 날짜별 문서: `/policies/privacy/<policy-date>/`
 - 앱 버전 자동 선택 URL: `/policies/privacy/?appVersion=<cfbundle-short-version>`
+- 고객지원 페이지: `/support`
 
 예시:
 

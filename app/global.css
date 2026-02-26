@@ -178,6 +178,94 @@ h3 {
   font-weight: 700;
 }
 
+.support-shell {
+  width: min(880px, 100%);
+  margin: 0 auto;
+  padding: clamp(1rem, 3vw, 2.2rem) 1rem 2.8rem;
+}
+
+.support-hero {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--panel);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+  padding: clamp(1rem, 3vw, 1.5rem);
+}
+
+.support-app-icon {
+  width: clamp(76px, 17vw, 104px);
+  height: clamp(76px, 17vw, 104px);
+  border-radius: 24px;
+  object-fit: cover;
+  border: 1px solid #d4dce6;
+}
+
+.support-kicker {
+  margin: 0;
+  font-size: 0.79rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.support-hero h1 {
+  margin: 0.35rem 0 0;
+  font-size: clamp(1.45rem, 4.8vw, 2.15rem);
+}
+
+.support-description {
+  margin: 0.6rem 0 0;
+  color: #3e4a56;
+  line-height: 1.7;
+}
+
+.support-card {
+  margin-top: 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--panel);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+  padding: clamp(0.95rem, 2.8vw, 1.35rem);
+}
+
+.support-card h2 {
+  margin: 0;
+  font-size: 1.14rem;
+}
+
+.support-card h3 {
+  margin: 1rem 0 0.35rem;
+  font-size: 1rem;
+}
+
+.support-card p {
+  margin: 0;
+  color: #2b3641;
+  line-height: 1.7;
+}
+
+.support-card ul {
+  margin: 0.75rem 0 0;
+  padding-left: 1.25rem;
+  color: #2b3641;
+  line-height: 1.7;
+}
+
+.support-card a {
+  color: var(--accent);
+}
+
+.support-updated {
+  margin: 0.85rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
 @media (max-width: 768px) {
   .policy-shell {
     padding-left: 0;
@@ -195,5 +283,33 @@ h3 {
   .policy-meta {
     grid-template-columns: 1fr;
     gap: 0.55rem;
+  }
+
+  .support-shell {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .support-hero,
+  .support-card {
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .support-hero {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .support-app-icon {
+    width: 82px;
+    height: 82px;
+    border-radius: 20px;
+  }
+
+  .support-updated {
+    padding: 0 1rem;
   }
 }
