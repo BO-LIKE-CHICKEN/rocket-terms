@@ -24,7 +24,7 @@
     'Segoe UI', Roboto, sans-serif;
   background: var(--bg-primary);
   color: var(--text-primary);
-  min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -96,7 +96,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
   min-height: 100dvh;
   padding: 0 24px;
   overflow: hidden;
@@ -229,14 +228,14 @@
 
 .promo-features-outer {
   position: relative;
-  height: 400vh;
+  height: 400dvh;
   background: var(--bg-section);
 }
 
 .promo-features-sticky {
   position: sticky;
   top: 0;
-  height: 100vh;
+  height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -544,7 +543,6 @@
   padding: 100px 24px 120px;
   overflow: hidden;
   background: var(--bg-primary);
-  min-height: 80vh;
   min-height: 80dvh;
   display: flex;
   flex-direction: column;
