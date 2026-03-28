@@ -46,12 +46,13 @@ function FeatureSlide({
   total: number;
   scrollYProgress: MotionValue<number>;
 }) {
-  const segmentSize = 1 / total;
-  const start = index * segmentSize;
+  // Features occupy scroll range 0.15-1.0 (header uses 0-0.15)
+  const featureRange = 0.85; // 1.0 - 0.15
+  const featureStart = 0.15;
+  const segmentSize = featureRange / total;
+  const start = featureStart + index * segmentSize;
   const end = start + segmentSize;
 
-  // Cross-fade: fade in during first 20% of segment, stay visible, fade out during last 20%
-  // First item starts visible, last item stays visible
   const opacity = useTransform(
     scrollYProgress,
     [
@@ -61,17 +62,17 @@ function FeatureSlide({
       Math.min(1, end),
     ],
     [
-      index === 0 ? 1 : 0, // first starts visible
+      0,
       1,
       1,
-      index === total - 1 ? 1 : 0, // last stays visible
+      index === total - 1 ? 1 : 0,
     ],
   );
 
   const y = useTransform(
     scrollYProgress,
     [start, start + segmentSize * 0.2, end - segmentSize * 0.2, end],
-    [index === 0 ? 0 : 30, 0, 0, index === total - 1 ? 0 : -20],
+    [30, 0, 0, index === total - 1 ? 0 : -20],
   );
 
   return (
@@ -110,15 +111,14 @@ function ProgressDot({
   total: number;
   scrollYProgress: MotionValue<number>;
 }) {
-  const segmentSize = 1 / total;
+  const featureRange = 0.85;
+  const featureStart = 0.15;
+  const segmentSize = featureRange / total;
+  const start = featureStart + index * segmentSize;
+  const end = start + segmentSize;
   const dotOpacity = useTransform(
     scrollYProgress,
-    [
-      index * segmentSize,
-      index * segmentSize + 0.05,
-      (index + 1) * segmentSize - 0.05,
-      (index + 1) * segmentSize,
-    ],
+    [start, start + 0.03, end - 0.03, end],
     [0.3, 1, 1, 0.3],
   );
 
@@ -142,7 +142,8 @@ export default function FeaturesSection() {
     offset: ['start start', 'end end'],
   });
 
-  const headerOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
+  // Header visible from 0-12%, fades out by 15%
+  const headerOpacity = useTransform(scrollYProgress, [0, 0.12, 0.15], [1, 1, 0]);
 
   return (
     <div ref={containerRef} className="promo-features-outer">
