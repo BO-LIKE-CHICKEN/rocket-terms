@@ -280,58 +280,31 @@
    CHARACTERS SECTION — Scroll-driven horizontal slide
    ══════════════════════════════════ */
 
-/* Outer container: tall to create scroll runway */
-.promo-characters-outer {
-  position: relative;
-  height: 300dvh;
+.promo-characters {
+  padding: 80px 24px;
   background: var(--bg-primary);
-}
-
-/* Sticky viewport: locks content while user scrolls */
-.promo-characters-sticky {
-  position: sticky;
-  top: 0;
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  overflow: hidden;
-  padding: 0;
 }
 
 .promo-characters-header {
   max-width: 480px;
-  margin: 0 auto 32px;
-  padding: 0 24px;
-  will-change: transform, opacity;
-  flex-shrink: 0;
+  margin: 0 auto 40px;
+  text-align: center;
 }
 
-/* Track wrapper: clips the horizontally-moving track */
-.promo-characters-track-wrap {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  min-height: 0;
-}
-
-/* The horizontal track of cards, translated by Framer Motion */
-.promo-characters-track {
-  display: flex;
-  gap: 24px;
-  padding: 0 32px;
-  will-change: transform;
+.promo-characters-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  max-width: 480px;
+  margin: 0 auto;
 }
 
 /* Character card */
 .promo-char-card {
-  width: 300px;
-  flex-shrink: 0;
   background: var(--bg-card);
   border: 1px solid var(--bg-card-border);
-  border-radius: 24px;
-  padding: 32px 24px;
+  border-radius: 20px;
+  padding: 24px 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -608,14 +581,13 @@
     max-width: 420px;
   }
 
-  .promo-characters-track {
-    gap: 32px;
-    padding: 0 48px;
+  .promo-characters-grid {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 720px;
   }
 
   .promo-char-card {
-    width: 320px;
-    padding: 36px 28px;
+    padding: 28px 20px;
   }
 
   .promo-char-img {
