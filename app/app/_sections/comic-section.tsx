@@ -23,7 +23,7 @@ export default function ComicSection() {
     <section className="promo-comic" ref={sectionRef}>
       <motion.div className="promo-comic-content" style={{ opacity, scale, y }}>
         <h2 className="promo-section-title">
-          한충한충 <span className="promo-text-accent">이야기</span>
+          한층한층 <span className="promo-text-accent">이야기</span>
         </h2>
         <p className="promo-section-sub">
           인스타그램에서 만화 연재 중
@@ -33,7 +33,7 @@ export default function ComicSection() {
         <motion.div className="promo-comic-preview" style={{ scale: imgScale }}>
           <img
             src="/promo/comic-preview.png"
-            alt="한충한충 이야기 만화 미리보기"
+            alt="한층한층 이야기 만화 미리보기"
             className="promo-comic-img"
             width={600}
             height={600}

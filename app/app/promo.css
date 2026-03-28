@@ -25,7 +25,7 @@
   background: var(--bg-primary);
   color: var(--text-primary);
   min-height: 100dvh;
-  overflow-x: hidden;
+  overflow-x: clip;  /* clip, NOT hidden — hidden breaks sticky positioning */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -223,56 +223,40 @@
 }
 
 /* ══════════════════════════════════
-   FEATURES SECTION — Scroll-reveal cards
+   FEATURES SECTION — Toss-style sticky cross-fade
    ══════════════════════════════════ */
 
-.promo-features {
-  padding: 80px 24px;
+.promo-features-outer {
+  position: relative;
+  height: 500dvh;  /* 4 features + header = 5 screens of scroll */
   background: var(--bg-section);
 }
 
-.promo-features-header {
-  margin-bottom: 56px;
-}
-
-.promo-feature-card {
-  max-width: 480px;
-  margin: 0 auto 60px;
-  text-align: center;
-}
-
-.promo-feature-card:last-child {
-  margin-bottom: 0;
-}
-
-.promo-feature-card img {
-  width: 200px;
-  height: 200px;
-  object-fit: contain;
-  margin: 0 auto 24px;
-  display: block;
-  filter: drop-shadow(0 16px 40px rgba(0, 0, 0, 0.4));
-}
-
-.promo-feature-card-emoji {
-  font-size: 32px;
-  display: block;
-  margin-bottom: 8px;
+.promo-features-sticky {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  overflow: clip;  /* CRITICAL: clip, NOT hidden — hidden breaks sticky */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .promo-feature-card-title {
-  margin: 0 0 8px;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 800;
-  letter-spacing: -0.02em;
   color: var(--text-primary);
+  margin: 8px 0 0;
+  letter-spacing: -0.02em;
 }
 
 .promo-feature-card-desc {
-  margin: 0;
   font-size: 16px;
-  line-height: 1.7;
   color: var(--text-secondary);
+  max-width: 320px;
+  text-align: center;
+  line-height: 1.5;
+  margin: 8px 0 0;
   word-break: keep-all;
 }
 
@@ -567,13 +551,8 @@
     font-size: 18px;
   }
 
-  .promo-feature-card img {
-    width: 240px;
-    height: 240px;
-  }
-
   .promo-feature-card-title {
-    font-size: 34px;
+    font-size: 30px;
   }
 
   .promo-feature-card-desc {
