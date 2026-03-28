@@ -13,7 +13,15 @@ export const metadata: Metadata = {
     description:
       '귀여운 슬라임과 함께 매일 계단 오르기 습관을 만들어보세요.',
     type: 'website',
-    url: 'https://one-more-floor.com/app/',
+    url: 'https://one-more-floor.com/',
+    images: [
+      {
+        url: 'https://one-more-floor.com/promo/og-image.png',
+        width: 1024,
+        height: 1024,
+        alt: '한층한층 슬라임',
+      },
+    ],
   },
 };
 

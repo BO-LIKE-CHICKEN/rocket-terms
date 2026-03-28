@@ -10,6 +10,13 @@ export const metadata: Metadata = {
   title: '한층한층 — 계단 오르기를 습관으로',
   description:
     '한 층만 더 올라가면 귀여운 슬라임이 기다려요. 계단 오르기 기록, 슬라임 수집, D-1 랭킹.',
+  openGraph: {
+    title: '한층한층 — 슬라임과 함께하는 계단 오르기',
+    description: '귀여운 슬라임과 함께 매일 계단 오르기 습관을 만들어보세요.',
+    type: 'website',
+    url: 'https://one-more-floor.com/',
+    images: [{ url: 'https://one-more-floor.com/promo/og-image.png', width: 1024, height: 1024, alt: '한층한층 슬라임' }],
+  },
   robots: {
     index: false,
     follow: false,
