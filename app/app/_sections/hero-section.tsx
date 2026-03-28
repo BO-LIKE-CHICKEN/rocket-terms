@@ -1,24 +1,40 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { useRef, type RefObject } from 'react';
 
 const APP_STORE_URL = 'https://apps.apple.com/app/id6759623745';
 
-const spring = { type: 'spring' as const, stiffness: 100, damping: 20 };
+const headlineLine1 = ['한 층 더', '오를수록,'];
+const headlineLine2 = ['한층 더', '건강해져요'];
 
 export default function HeroSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef as RefObject<HTMLElement>,
+    offset: ['start start', 'end start'],
+  });
+
+  const imgScale = useTransform(scrollYProgress, [0, 0.5], [0.85, 1]);
+  const imgOpacity = useTransform(scrollYProgress, [0, 0.15], [0.6, 1]);
+  const gradientOpacity = useTransform(scrollYProgress, [0, 0.4], [0.3, 0.8]);
+  const indicatorOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
+
   return (
-    <section className="promo-hero">
-      <div className="promo-hero-glow" aria-hidden="true" />
+    <section className="promo-hero" ref={sectionRef}>
+      {/* Gradient overlay that shifts with scroll */}
+      <motion.div
+        className="promo-hero-glow"
+        aria-hidden="true"
+        style={{ opacity: gradientOpacity }}
+      />
 
       <div className="promo-hero-content">
-        {/* Slime — floats gently */}
+        {/* Slime - scale linked to scroll */}
         <motion.div
           className="promo-hero-visual"
-          initial={{ opacity: 0, scale: 0.85 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ ...spring, delay: 0 }}
+          style={{ scale: imgScale, opacity: imgOpacity }}
         >
           <motion.img
             src="/promo/hero-mint.png"
@@ -35,37 +51,69 @@ export default function HeroSection() {
           />
         </motion.div>
 
-        {/* Headline */}
-        <motion.div
-          className="promo-hero-text"
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ ...spring, delay: 0.15 }}
-        >
+        {/* Headline - word by word animation */}
+        <div className="promo-hero-text">
           <h1 className="promo-hero-title">
-            한 층 더 오를수록,
-            <br />
-            <span className="promo-hero-accent">한층 더 건강해져요</span>
+            <span className="promo-hero-title-line">
+              {headlineLine1.map((word, i) => (
+                <motion.span
+                  key={`l1-${i}`}
+                  className="promo-hero-word"
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: 0.1 + i * 0.12,
+                    ease: [0.25, 0.1, 0.25, 1],
+                  }}
+                >
+                  {word}
+                </motion.span>
+              ))}
+            </span>
+            <span className="promo-hero-title-line">
+              {headlineLine2.map((word, i) => (
+                <motion.span
+                  key={`l2-${i}`}
+                  className="promo-hero-word promo-hero-accent"
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: 0.35 + i * 0.12,
+                    ease: [0.25, 0.1, 0.25, 1],
+                  }}
+                >
+                  {word}
+                </motion.span>
+              ))}
+            </span>
           </h1>
-          <p className="promo-hero-sub">
+
+          <motion.p
+            className="promo-hero-sub"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+          >
             귀여운 슬라임과 함께 계단 오르기 습관을 만들어보세요.
             <br />
             매일 한 층, 작은 발걸음이 큰 변화를 만듭니다.
-          </p>
-        </motion.div>
+          </motion.p>
+        </div>
 
         {/* App Store badge */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ ...spring, delay: 0.35 }}
+          transition={{ duration: 0.6, delay: 0.75, ease: [0.25, 0.1, 0.25, 1] }}
         >
           <motion.a
             href={APP_STORE_URL}
             className="promo-appstore-badge"
             target="_blank"
             rel="noopener noreferrer"
-            whileTap={{ scale: 0.95 }}
+            whileTap={{ scale: 0.96 }}
           >
             <svg
               width="20"
@@ -81,13 +129,14 @@ export default function HeroSection() {
         </motion.div>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Scroll indicator - fades out on scroll */}
       <motion.div
         className="promo-scroll-indicator"
         aria-hidden="true"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2, duration: 0.8 }}
+        style={{ opacity: indicatorOpacity }}
       >
         <span className="promo-scroll-dot" />
       </motion.div>

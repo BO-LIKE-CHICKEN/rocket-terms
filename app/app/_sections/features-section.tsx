@@ -1,12 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import {
-  motion,
-  fadeInUp,
-  staggerContainer,
-  ScrollReveal,
-} from '../_components/motion-wrapper';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { useRef, type RefObject } from 'react';
 
 const features = [
   {
@@ -39,54 +35,111 @@ const features = [
   },
 ];
 
+function FeatureCard({
+  feature,
+  index,
+  total,
+}: {
+  feature: (typeof features)[number];
+  index: number;
+  total: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref as RefObject<HTMLElement>,
+    offset: ['start end', 'center center'],
+  });
+
+  const opacity = useTransform(scrollYProgress, [0, 0.6], [0, 1]);
+  const scale = useTransform(scrollYProgress, [0, 0.6], [0.92, 1]);
+  const y = useTransform(scrollYProgress, [0, 0.6], [60, 0]);
+
+  /* Progress bar reveal tied to scroll */
+  const progressRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: progressScroll } = useScroll({
+    target: progressRef as RefObject<HTMLElement>,
+    offset: ['start end', 'end center'],
+  });
+  const progressWidth = useTransform(progressScroll, [0, 1], ['0%', '100%']);
+
+  return (
+    <motion.div
+      ref={ref}
+      className="promo-feature-card"
+      style={{
+        opacity,
+        scale,
+        y,
+        position: 'sticky',
+        top: `${140 + index * 12}px`,
+        zIndex: total - index,
+      }}
+      whileTap={{ scale: 0.97 }}
+    >
+      {/* Progress bar */}
+      <div className="promo-feature-progress" ref={progressRef}>
+        <motion.div
+          className="promo-feature-progress-bar"
+          style={{ width: progressWidth }}
+        />
+      </div>
+      <div className="promo-feature-img-wrap">
+        <img
+          src={feature.image}
+          alt={feature.title}
+          className="promo-feature-img"
+          width={200}
+          height={200}
+          loading="lazy"
+        />
+      </div>
+      <div className="promo-feature-body">
+        <span className="promo-feature-emoji">{feature.emoji}</span>
+        <h3 className="promo-feature-title">{feature.title}</h3>
+        <p className="promo-feature-desc">{feature.desc}</p>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function FeaturesSection() {
+  const headerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: headerRef as RefObject<HTMLElement>,
+    offset: ['start end', 'center center'],
+  });
+
+  const headerOpacity = useTransform(scrollYProgress, [0, 0.6], [0, 1]);
+  const headerY = useTransform(scrollYProgress, [0, 0.6], [40, 0]);
+  const headerScale = useTransform(scrollYProgress, [0, 0.6], [0.95, 1]);
+
   return (
     <section className="promo-features">
-      <div className="promo-features-header">
-        <ScrollReveal>
-          <h2 className="promo-section-title">
-            매일이 <span className="promo-text-accent">특별한 도전</span>
-          </h2>
-          <p className="promo-section-sub">
-            단순한 기록 앱이 아니에요.
-            <br />
-            게임처럼 재미있는 계단 오르기 경험.
-          </p>
-        </ScrollReveal>
-      </div>
-
       <motion.div
-        className="promo-features-stack"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: '-100px' }}
-        variants={staggerContainer}
+        ref={headerRef}
+        className="promo-features-header"
+        style={{ opacity: headerOpacity, y: headerY, scale: headerScale }}
       >
-        {features.map((f) => (
-          <motion.div
-            key={f.key}
-            className="promo-feature-card"
-            variants={fadeInUp}
-            whileTap={{ scale: 0.97 }}
-          >
-            <div className="promo-feature-img-wrap">
-              <img
-                src={f.image}
-                alt={f.title}
-                className="promo-feature-img"
-                width={200}
-                height={200}
-                loading="lazy"
-              />
-            </div>
-            <div className="promo-feature-body">
-              <span className="promo-feature-emoji">{f.emoji}</span>
-              <h3 className="promo-feature-title">{f.title}</h3>
-              <p className="promo-feature-desc">{f.desc}</p>
-            </div>
-          </motion.div>
-        ))}
+        <h2 className="promo-section-title">
+          매일이 <span className="promo-text-accent">특별한 도전</span>
+        </h2>
+        <p className="promo-section-sub">
+          단순한 기록 앱이 아니에요.
+          <br />
+          게임처럼 재미있는 계단 오르기 경험.
+        </p>
       </motion.div>
+
+      <div className="promo-features-stack">
+        {features.map((f, i) => (
+          <FeatureCard
+            key={f.key}
+            feature={f}
+            index={i}
+            total={features.length}
+          />
+        ))}
+      </div>
     </section>
   );
 }

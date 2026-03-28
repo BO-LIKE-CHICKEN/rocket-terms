@@ -1,14 +1,7 @@
 'use client';
 
-import { motion, type Variants } from 'framer-motion';
-import type { ReactNode } from 'react';
-
-/* ── Toss-like spring transition ── */
-const springTransition = {
-  type: 'spring' as const,
-  stiffness: 100,
-  damping: 20,
-};
+import { motion, useScroll, useTransform, type Variants } from 'framer-motion';
+import { useRef, type ReactNode, type RefObject } from 'react';
 
 /* ── shared animation variants ── */
 
@@ -17,7 +10,7 @@ export const fadeInUp: Variants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: springTransition,
+    transition: { type: 'spring', stiffness: 100, damping: 20 },
   },
 };
 
@@ -26,7 +19,7 @@ export const fadeInScale: Variants = {
   visible: {
     opacity: 1,
     scale: 1,
-    transition: springTransition,
+    transition: { type: 'spring', stiffness: 100, damping: 20 },
   },
 };
 
@@ -45,7 +38,7 @@ export const slideFromLeft: Variants = {
   visible: {
     opacity: 1,
     x: 0,
-    transition: springTransition,
+    transition: { type: 'spring', stiffness: 100, damping: 20 },
   },
 };
 
@@ -54,7 +47,7 @@ export const slideFromRight: Variants = {
   visible: {
     opacity: 1,
     x: 0,
-    transition: springTransition,
+    transition: { type: 'spring', stiffness: 100, damping: 20 },
   },
 };
 
@@ -80,12 +73,34 @@ export function ScrollReveal({
       whileInView="visible"
       viewport={{ once: true, margin: '-100px' }}
       variants={variants}
-      transition={delay ? { ...springTransition, delay } : undefined}
+      transition={delay ? { type: 'spring', stiffness: 100, damping: 20, delay } : undefined}
     >
       {children}
     </motion.div>
   );
 }
 
-/* ── re-export motion for convenience ── */
-export { motion };
+/* ── scroll-linked section fade wrapper ── */
+
+interface ScrollFadeProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export function ScrollFade({ children, className }: ScrollFadeProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref as RefObject<HTMLElement>,
+    offset: ['start end', 'end start'],
+  });
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+
+  return (
+    <motion.div ref={ref} className={className} style={{ opacity }}>
+      {children}
+    </motion.div>
+  );
+}
+
+/* ── re-exports ── */
+export { motion, useScroll, useTransform, useRef };

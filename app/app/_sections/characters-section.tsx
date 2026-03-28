@@ -1,12 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import {
-  motion,
-  fadeInUp,
-  staggerContainer,
-  ScrollReveal,
-} from '../_components/motion-wrapper';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { useRef, useState, useEffect, type RefObject } from 'react';
 
 const characters = [
   {
@@ -54,35 +50,64 @@ const characters = [
 ];
 
 export default function CharactersSection() {
+  const headerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: headerRef as RefObject<HTMLElement>,
+    offset: ['start end', 'center center'],
+  });
+
+  const headerOpacity = useTransform(scrollYProgress, [0, 0.6], [0, 1]);
+  const headerY = useTransform(scrollYProgress, [0, 0.6], [40, 0]);
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const scrollLeft = container.scrollLeft;
+      const cardWidth = container.firstElementChild
+        ? (container.firstElementChild as HTMLElement).offsetWidth
+        : 280;
+      const gap = 16;
+      const idx = Math.round(scrollLeft / (cardWidth + gap));
+      setActiveIndex(Math.min(idx, characters.length - 1));
+    };
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <section className="promo-characters">
-      <div className="promo-characters-header">
-        <ScrollReveal>
-          <h2 className="promo-section-title">
-            6마리 슬라임,
-            <br />
-            <span className="promo-text-accent">전부 모아보세요</span>
-          </h2>
-          <p className="promo-section-sub">
-            각자의 개성을 가진 슬라임들이
-            <br />
-            계단 위에서 기다리고 있어요.
-          </p>
-        </ScrollReveal>
-      </div>
-
       <motion.div
-        className="promo-characters-stack"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: '-100px' }}
-        variants={staggerContainer}
+        ref={headerRef}
+        className="promo-characters-header"
+        style={{ opacity: headerOpacity, y: headerY }}
+      >
+        <h2 className="promo-section-title">
+          6마리 슬라임,
+          <br />
+          <span className="promo-text-accent">전부 모아보세요</span>
+        </h2>
+        <p className="promo-section-sub">
+          각자의 개성을 가진 슬라임들이
+          <br />
+          계단 위에서 기다리고 있어요.
+        </p>
+      </motion.div>
+
+      {/* Horizontal scroll-snap carousel */}
+      <div
+        className="promo-characters-carousel"
+        ref={scrollContainerRef}
       >
         {characters.map((c) => (
           <motion.div
             key={c.id}
             className="promo-char-card"
-            variants={fadeInUp}
             whileTap={{ scale: 0.97 }}
             style={
               {
@@ -106,7 +131,17 @@ export default function CharactersSection() {
             </div>
           </motion.div>
         ))}
-      </motion.div>
+      </div>
+
+      {/* Scroll indicator dots */}
+      <div className="promo-characters-dots" aria-hidden="true">
+        {characters.map((c, i) => (
+          <span
+            key={c.id}
+            className={`promo-characters-dot${i === activeIndex ? ' promo-characters-dot--active' : ''}`}
+          />
+        ))}
+      </div>
     </section>
   );
 }

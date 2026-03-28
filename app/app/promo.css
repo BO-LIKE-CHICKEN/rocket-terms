@@ -1,12 +1,12 @@
 /* ══════════════════════════════════
    Promo Page — /app
-   Toss-like mobile-first dark theme
+   Apple-style mobile-first dark theme
+   No hover effects — mobile web only
    ══════════════════════════════════ */
 
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
 .promo-root {
-  /* Toss-inspired palette */
   --bg-primary: #0D1117;
   --bg-section: #161B22;
   --bg-card: rgba(255, 255, 255, 0.04);
@@ -135,6 +135,7 @@
   position: relative;
   display: flex;
   justify-content: center;
+  will-change: transform;
 }
 
 .promo-hero-img {
@@ -156,6 +157,21 @@
   line-height: 1.35;
   letter-spacing: -0.035em;
   word-break: keep-all;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.promo-hero-title-line {
+  display: flex;
+  gap: 0.3em;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.promo-hero-word {
+  display: inline-block;
+  will-change: transform, opacity;
 }
 
 .promo-hero-accent {
@@ -208,7 +224,7 @@
 }
 
 /* ══════════════════════════════════
-   FEATURES SECTION
+   FEATURES SECTION — Sticky card stack
    ══════════════════════════════════ */
 
 .promo-features {
@@ -220,6 +236,7 @@
 .promo-features-header {
   max-width: 480px;
   margin: 0 auto 64px;
+  will-change: transform, opacity;
 }
 
 .promo-features-stack {
@@ -228,6 +245,8 @@
   gap: 24px;
   max-width: 480px;
   margin: 0 auto;
+  /* Extra bottom padding so last card can be sticky */
+  padding-bottom: 80px;
 }
 
 .promo-feature-card {
@@ -243,6 +262,28 @@
   text-align: center;
   gap: 20px;
   -webkit-tap-highlight-color: transparent;
+  will-change: transform, opacity;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Progress bar at top of card */
+
+.promo-feature-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+}
+
+.promo-feature-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-light), var(--accent));
+  will-change: width;
+  border-radius: 0 2px 2px 0;
 }
 
 .promo-feature-img-wrap {
@@ -298,36 +339,54 @@
 }
 
 /* ══════════════════════════════════
-   CHARACTERS SECTION
+   CHARACTERS SECTION — Horizontal carousel
    ══════════════════════════════════ */
 
 .promo-characters {
   position: relative;
-  padding: 100px 24px 120px;
+  padding: 100px 0 80px;
   background: var(--bg-primary);
 }
 
 .promo-characters-header {
   max-width: 480px;
-  margin: 0 auto 64px;
+  margin: 0 auto 48px;
+  padding: 0 24px;
+  will-change: transform, opacity;
 }
 
-.promo-characters-stack {
+/* Horizontal scroll-snap carousel */
+
+.promo-characters-carousel {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
-  max-width: 480px;
-  margin: 0 auto;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 24px 16px;
+  /* Hide scrollbar */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.promo-characters-carousel::-webkit-scrollbar {
+  display: none;
 }
 
 .promo-char-card {
+  scroll-snap-align: center;
+  min-width: 280px;
+  max-width: 300px;
+  flex-shrink: 0;
   background: var(--bg-card);
   border: 1px solid var(--bg-card-border);
   border-radius: 24px;
   padding: 28px 24px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 24px;
+  text-align: center;
+  gap: 16px;
   position: relative;
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
@@ -336,9 +395,9 @@
 .promo-char-card::before {
   content: '';
   position: absolute;
-  top: 50%;
-  left: -20px;
-  translate: 0 -50%;
+  top: 20%;
+  left: 50%;
+  translate: -50% 0;
   width: 120px;
   height: 120px;
   background: radial-gradient(circle, var(--char-color, var(--accent)) 0%, transparent 70%);
@@ -363,8 +422,6 @@
 .promo-char-info {
   position: relative;
   z-index: 1;
-  flex: 1;
-  min-width: 0;
 }
 
 .promo-char-name {
@@ -376,11 +433,89 @@
 }
 
 .promo-char-personality {
-  margin: 6px 0 0;
+  margin: 8px 0 0;
   font-size: 14px;
   line-height: 1.65;
   color: var(--text-secondary);
   word-break: keep-all;
+}
+
+/* Scroll indicator dots */
+
+.promo-characters-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 0 0;
+}
+
+.promo-characters-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.promo-characters-dot--active {
+  background: var(--accent-light);
+  transform: scale(1.4);
+}
+
+/* ══════════════════════════════════
+   COMIC / INSTAGRAM SECTION
+   ══════════════════════════════════ */
+
+.promo-comic {
+  position: relative;
+  padding: 100px 24px 120px;
+  background: var(--bg-section);
+  display: flex;
+  justify-content: center;
+}
+
+.promo-comic-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 480px;
+  width: 100%;
+  will-change: transform, opacity;
+}
+
+.promo-comic-preview {
+  margin: 40px 0;
+  width: 100%;
+  max-width: 360px;
+  border-radius: 20px;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.promo-comic-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 20px;
+  filter: drop-shadow(0 16px 48px rgba(0, 0, 0, 0.4));
+}
+
+.promo-comic-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 32px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #E1306C, #F77737, #FCAF45);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: -0.01em;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
 }
 
 /* ══════════════════════════════════
@@ -392,7 +527,7 @@
   text-align: center;
   padding: 100px 24px 120px;
   overflow: hidden;
-  background: var(--bg-section);
+  background: var(--bg-primary);
   min-height: 80vh;
   min-height: 80dvh;
   display: flex;
@@ -425,6 +560,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  will-change: transform, opacity;
 }
 
 .promo-cta-slime {
@@ -484,6 +620,12 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+.promo-footer-instagram {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .promo-footer-dot {
   width: 3px;
   height: 3px;
@@ -538,12 +680,21 @@
     align-items: flex-start;
   }
 
-  .promo-characters-stack {
-    max-width: 560px;
+  .promo-characters-carousel {
+    justify-content: center;
+    padding: 0 40px 16px;
+  }
+
+  .promo-char-card {
+    min-width: 240px;
   }
 
   .promo-char-img {
     width: 120px;
+  }
+
+  .promo-comic-preview {
+    max-width: 420px;
   }
 
   .promo-cta-title {
