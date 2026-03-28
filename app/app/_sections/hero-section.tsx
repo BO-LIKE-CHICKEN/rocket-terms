@@ -2,7 +2,7 @@
 'use client';
 
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef, type RefObject } from 'react';
+import { useRef, useState, type RefObject } from 'react';
 
 const APP_STORE_URL = 'https://apps.apple.com/app/id6759623745';
 
@@ -16,10 +16,10 @@ export default function HeroSection() {
     offset: ['start start', 'end start'],
   });
 
-  const imgScale = useTransform(scrollYProgress, [0, 0.5], [0.85, 1]);
-  const imgOpacity = useTransform(scrollYProgress, [0, 0.15], [0.6, 1]);
   const gradientOpacity = useTransform(scrollYProgress, [0, 0.4], [0.3, 0.8]);
   const indicatorOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
+
+  const [entranceDone, setEntranceDone] = useState(false);
 
   return (
     <section className="promo-hero" ref={sectionRef}>
@@ -31,10 +31,18 @@ export default function HeroSection() {
       />
 
       <div className="promo-hero-content">
-        {/* Slime - scale linked to scroll */}
+        {/* Slime - entrance animation on load, then float */}
         <motion.div
           className="promo-hero-visual"
-          style={{ scale: imgScale, opacity: imgOpacity }}
+          initial={{ opacity: 0, scale: 0.8, y: 30 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{
+            type: 'spring',
+            stiffness: 120,
+            damping: 14,
+            delay: 0.3,
+          }}
+          onAnimationComplete={() => setEntranceDone(true)}
         >
           <motion.img
             src="/promo/hero-mint.png"
@@ -42,12 +50,16 @@ export default function HeroSection() {
             className="promo-hero-img"
             width={360}
             height={360}
-            animate={{ y: [0, -12, 0] }}
-            transition={{
-              duration: 3.5,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
+            animate={entranceDone ? { y: [0, -12, 0] } : undefined}
+            transition={
+              entranceDone
+                ? {
+                    duration: 3.5,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                  }
+                : undefined
+            }
           />
         </motion.div>
 
