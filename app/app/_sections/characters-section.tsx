@@ -42,7 +42,7 @@ const characters = [
   {
     id: 'mountain-club',
     name: '산악회',
-    personality: '열정! 열정! 열정! ...백숙 먹으러 가자.',
+    personality: '왜인지 개발을 잘할 것 같다...',
     image: '/promo/characters/mountain-club.png',
     color: '#a3e635',
   },
