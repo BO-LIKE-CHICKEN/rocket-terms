@@ -7,8 +7,9 @@ interface RootLayoutProps {
 }
 
 export const metadata: Metadata = {
-  title: '한층한층 개인정보 처리방침',
-  description: '한층한층 앱 개인정보 처리방침 문서',
+  title: '한층한층 — 계단 오르기를 습관으로',
+  description:
+    '한 층만 더 올라가면 귀여운 슬라임이 기다려요. 계단 오르기 기록, 슬라임 수집, D-1 랭킹.',
   robots: {
     index: false,
     follow: false,
