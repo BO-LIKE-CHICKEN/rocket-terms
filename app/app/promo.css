@@ -224,118 +224,134 @@
 }
 
 /* ══════════════════════════════════
-   FEATURES SECTION — Sticky card stack
+   FEATURES SECTION — Sticky scroll-driven
    ══════════════════════════════════ */
 
-.promo-features {
+.promo-features-outer {
   position: relative;
-  padding: 100px 24px 120px;
+  height: 400vh;
   background: var(--bg-section);
 }
 
-.promo-features-header {
-  max-width: 480px;
-  margin: 0 auto 64px;
-  will-change: transform, opacity;
-}
-
-.promo-features-stack {
+.promo-features-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
   display: flex;
-  flex-direction: column;
-  gap: 24px;
-  max-width: 480px;
-  margin: 0 auto;
-  /* Extra bottom padding so last card can be sticky */
-  padding-bottom: 80px;
-}
-
-.promo-feature-card {
-  background: var(--bg-card);
-  border: 1px solid var(--bg-card-border);
-  border-radius: 24px;
-  padding: 32px 24px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  text-align: center;
-  gap: 20px;
-  -webkit-tap-highlight-color: transparent;
-  will-change: transform, opacity;
+  justify-content: center;
   overflow: hidden;
-  position: relative;
 }
 
-/* Progress bar at top of card */
-
-.promo-feature-progress {
+.promo-features-header {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.04);
-  overflow: hidden;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+  z-index: 2;
+  pointer-events: none;
+  will-change: opacity;
 }
 
-.promo-feature-progress-bar {
+.promo-features-slides {
+  position: relative;
+  width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, var(--accent-light), var(--accent));
-  will-change: width;
-  border-radius: 0 2px 2px 0;
 }
 
-.promo-feature-img-wrap {
+.promo-feature-slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.promo-feature-slide-img-wrap {
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-bottom: 32px;
 }
 
-.promo-feature-img-wrap::before {
+.promo-feature-slide-img-wrap::before {
   content: '';
   position: absolute;
-  width: 140px;
-  height: 140px;
+  width: 200px;
+  height: 200px;
   background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
 }
 
-.promo-feature-img {
-  width: 160px;
+.promo-feature-slide-img {
+  width: 220px;
   height: auto;
   position: relative;
   z-index: 1;
-  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 16px 40px rgba(0, 0, 0, 0.4));
 }
 
-.promo-feature-body {
+.promo-feature-slide-body {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   gap: 8px;
+  max-width: 360px;
 }
 
-.promo-feature-emoji {
-  font-size: 28px;
+.promo-feature-slide-emoji {
+  font-size: 32px;
   display: block;
+  margin-bottom: 4px;
 }
 
-.promo-feature-title {
+.promo-feature-slide-title {
   margin: 0;
-  font-size: 22px;
+  font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--text-primary);
 }
 
-.promo-feature-desc {
+.promo-feature-slide-desc {
   margin: 0;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.7;
   color: var(--text-secondary);
   word-break: keep-all;
+}
+
+/* Progress dots */
+
+.promo-features-dots {
+  position: absolute;
+  bottom: 48px;
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  gap: 12px;
+  z-index: 10;
+}
+
+.promo-features-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-light);
+  will-change: opacity, transform;
 }
 
 /* ══════════════════════════════════
@@ -665,19 +681,22 @@
     font-size: 18px;
   }
 
-  .promo-features-stack {
-    max-width: 560px;
+  .promo-feature-slide-img {
+    width: 280px;
   }
 
-  .promo-feature-card {
-    flex-direction: row;
-    text-align: left;
-    padding: 36px 32px;
-    gap: 32px;
+  .promo-feature-slide-title {
+    font-size: 34px;
   }
 
-  .promo-feature-body {
-    align-items: flex-start;
+  .promo-feature-slide-desc {
+    font-size: 18px;
+    max-width: 420px;
+  }
+
+  .promo-feature-slide-img-wrap::before {
+    width: 260px;
+    height: 260px;
   }
 
   .promo-characters-carousel {
