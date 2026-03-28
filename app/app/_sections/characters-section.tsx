@@ -2,7 +2,7 @@
 'use client';
 
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef, useState, useEffect, type RefObject } from 'react';
+import { useRef, type RefObject } from 'react';
 
 const characters = [
   {
@@ -50,97 +50,82 @@ const characters = [
 ];
 
 export default function CharactersSection() {
-  const headerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  /* Header fade-in: based on when the outer container enters the viewport */
+  const { scrollYProgress: headerProgress } = useScroll({
+    target: containerRef as RefObject<HTMLElement>,
+    offset: ['start end', 'start 0.3'],
+  });
+  const headerOpacity = useTransform(headerProgress, [0, 1], [0, 1]);
+  const headerY = useTransform(headerProgress, [0, 1], [40, 0]);
+
+  /* Horizontal scroll: map vertical scroll progress of the tall container
+     to a horizontal translateX on the card track */
   const { scrollYProgress } = useScroll({
-    target: headerRef as RefObject<HTMLElement>,
-    offset: ['start end', 'center center'],
+    target: containerRef as RefObject<HTMLElement>,
+    offset: ['start start', 'end end'],
   });
 
-  const headerOpacity = useTransform(scrollYProgress, [0, 0.6], [0, 1]);
-  const headerY = useTransform(scrollYProgress, [0, 0.6], [40, 0]);
-
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    const handleScroll = () => {
-      const scrollLeft = container.scrollLeft;
-      const cardWidth = container.firstElementChild
-        ? (container.firstElementChild as HTMLElement).offsetWidth
-        : 280;
-      const gap = 16;
-      const idx = Math.round(scrollLeft / (cardWidth + gap));
-      setActiveIndex(Math.min(idx, characters.length - 1));
-    };
-
-    container.addEventListener('scroll', handleScroll, { passive: true });
-    return () => container.removeEventListener('scroll', handleScroll);
-  }, []);
+  // 6 cards * 300px + 5 gaps * 24px + padding = ~1920px total track width
+  // On a 390px viewport we need to translate roughly -(1920 - 390) = -1530px
+  // Using percentage of the track: ~80%. Fine-tuned so last card is fully visible.
+  const x = useTransform(scrollYProgress, [0.05, 0.95], ['0%', '-72%']);
 
   return (
-    <section className="promo-characters">
-      <motion.div
-        ref={headerRef}
-        className="promo-characters-header"
-        style={{ opacity: headerOpacity, y: headerY }}
-      >
-        <h2 className="promo-section-title">
-          6마리 슬라임,
-          <br />
-          <span className="promo-text-accent">전부 모아보세요</span>
-        </h2>
-        <p className="promo-section-sub">
-          각자의 개성을 가진 슬라임들이
-          <br />
-          계단 위에서 기다리고 있어요.
-        </p>
-      </motion.div>
+    <section ref={containerRef} className="promo-characters-outer">
+      {/* Sticky viewport */}
+      <div className="promo-characters-sticky">
+        {/* Header */}
+        <motion.div
+          className="promo-characters-header"
+          style={{ opacity: headerOpacity, y: headerY }}
+        >
+          <h2 className="promo-section-title">
+            6마리 슬라임,
+            <br />
+            <span className="promo-text-accent">전부 모아보세요</span>
+          </h2>
+          <p className="promo-section-sub">
+            각자의 개성을 가진 슬라임들이
+            <br />
+            계단 위에서 기다리고 있어요.
+          </p>
+        </motion.div>
 
-      {/* Horizontal scroll-snap carousel */}
-      <div
-        className="promo-characters-carousel"
-        ref={scrollContainerRef}
-      >
-        {characters.map((c) => (
-          <motion.div
-            key={c.id}
-            className="promo-char-card"
-            whileTap={{ scale: 0.97 }}
-            style={
-              {
-                '--char-color': c.color,
-              } as React.CSSProperties
-            }
-          >
-            <div className="promo-char-img-wrap">
-              <img
-                src={c.image}
-                alt={c.name}
-                className="promo-char-img"
-                width={160}
-                height={160}
-                loading="lazy"
-              />
-            </div>
-            <div className="promo-char-info">
-              <h3 className="promo-char-name">{c.name}</h3>
-              <p className="promo-char-personality">{c.personality}</p>
-            </div>
+        {/* Horizontal card track */}
+        <div className="promo-characters-track-wrap">
+          <motion.div className="promo-characters-track" style={{ x }}>
+            {characters.map((c) => (
+              <motion.div
+                key={c.id}
+                className="promo-char-card"
+                whileTap={{ scale: 0.97 }}
+                style={
+                  {
+                    '--char-color': c.color,
+                  } as React.CSSProperties
+                }
+              >
+                <div className="promo-char-glow" />
+                <div className="promo-char-img-wrap">
+                  <img
+                    src={c.image}
+                    alt={c.name}
+                    className="promo-char-img"
+                    width={160}
+                    height={160}
+                    loading="lazy"
+                  />
+                </div>
+                <div className="promo-char-info">
+                  <h3 className="promo-char-name">{c.name}</h3>
+                  <p className="promo-char-personality">{c.personality}</p>
+                </div>
+              </motion.div>
+            ))}
           </motion.div>
-        ))}
-      </div>
-
-      {/* Scroll indicator dots */}
-      <div className="promo-characters-dots" aria-hidden="true">
-        {characters.map((c, i) => (
-          <span
-            key={c.id}
-            className={`promo-characters-dot${i === activeIndex ? ' promo-characters-dot--active' : ''}`}
-          />
-        ))}
+        </div>
       </div>
     </section>
   );

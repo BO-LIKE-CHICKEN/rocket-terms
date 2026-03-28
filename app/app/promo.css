@@ -277,49 +277,61 @@
 }
 
 /* ══════════════════════════════════
-   CHARACTERS SECTION — Horizontal carousel
+   CHARACTERS SECTION — Scroll-driven horizontal slide
    ══════════════════════════════════ */
 
-.promo-characters {
+/* Outer container: tall to create scroll runway */
+.promo-characters-outer {
   position: relative;
-  padding: 100px 0 80px;
+  height: 300dvh;
   background: var(--bg-primary);
+}
+
+/* Sticky viewport: locks content while user scrolls */
+.promo-characters-sticky {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0;
 }
 
 .promo-characters-header {
   max-width: 480px;
-  margin: 0 auto 48px;
+  margin: 0 auto 32px;
   padding: 0 24px;
   will-change: transform, opacity;
+  flex-shrink: 0;
 }
 
-/* Horizontal scroll-snap carousel */
-
-.promo-characters-carousel {
+/* Track wrapper: clips the horizontally-moving track */
+.promo-characters-track-wrap {
+  flex: 1;
   display: flex;
-  gap: 16px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  padding: 0 24px 16px;
-  /* Hide scrollbar */
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  align-items: center;
+  overflow: hidden;
+  min-height: 0;
 }
 
-.promo-characters-carousel::-webkit-scrollbar {
-  display: none;
+/* The horizontal track of cards, translated by Framer Motion */
+.promo-characters-track {
+  display: flex;
+  gap: 24px;
+  padding: 0 32px;
+  will-change: transform;
 }
 
+/* Character card */
 .promo-char-card {
-  scroll-snap-align: center;
-  min-width: 280px;
-  max-width: 300px;
+  width: 300px;
   flex-shrink: 0;
   background: var(--bg-card);
   border: 1px solid var(--bg-card-border);
   border-radius: 24px;
-  padding: 28px 24px;
+  padding: 32px 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -328,18 +340,20 @@
   position: relative;
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
 }
 
-.promo-char-card::before {
-  content: '';
+/* Per-character accent glow */
+.promo-char-glow {
   position: absolute;
-  top: 20%;
+  top: 10%;
   left: 50%;
   translate: -50% 0;
-  width: 120px;
-  height: 120px;
+  width: 180px;
+  height: 180px;
   background: radial-gradient(circle, var(--char-color, var(--accent)) 0%, transparent 70%);
-  opacity: 0.1;
+  opacity: 0.12;
   border-radius: 50%;
   pointer-events: none;
 }
@@ -352,9 +366,9 @@
 }
 
 .promo-char-img {
-  width: 100px;
+  width: 120px;
   height: auto;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.35));
 }
 
 .promo-char-info {
@@ -364,7 +378,7 @@
 
 .promo-char-name {
   margin: 0;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--char-color, var(--accent-light));
@@ -372,32 +386,10 @@
 
 .promo-char-personality {
   margin: 8px 0 0;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.65;
   color: var(--text-secondary);
   word-break: keep-all;
-}
-
-/* Scroll indicator dots */
-
-.promo-characters-dots {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  padding: 16px 0 0;
-}
-
-.promo-characters-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  transition: background 0.3s ease, transform 0.3s ease;
-}
-
-.promo-characters-dot--active {
-  background: var(--accent-light);
-  transform: scale(1.4);
 }
 
 /* ══════════════════════════════════
@@ -616,17 +608,18 @@
     max-width: 420px;
   }
 
-  .promo-characters-carousel {
-    justify-content: center;
-    padding: 0 40px 16px;
+  .promo-characters-track {
+    gap: 32px;
+    padding: 0 48px;
   }
 
   .promo-char-card {
-    min-width: 240px;
+    width: 320px;
+    padding: 36px 28px;
   }
 
   .promo-char-img {
-    width: 120px;
+    width: 140px;
   }
 
   .promo-comic-preview {
