@@ -8,20 +8,30 @@ export const metadata: Metadata = {
   other: {
     'apple-itunes-app': 'app-id=6759623745',
   },
+  alternates: {
+    canonical: 'https://one-more-floor.com/app',
+  },
   openGraph: {
     title: '한층한층 — 슬라임과 함께하는 계단 오르기',
     description:
       '귀여운 슬라임과 함께 매일 계단 오르기 습관을 만들어보세요.',
     type: 'website',
-    url: 'https://one-more-floor.com/',
+    url: 'https://one-more-floor.com/app',
     images: [
       {
-        url: 'https://one-more-floor.com/promo/og-image.png',
+        url: '/promo/og-image.png',
         width: 1024,
         height: 1024,
         alt: '한층한층 슬라임',
       },
     ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: '한층한층 — 슬라임과 함께하는 계단 오르기',
+    description:
+      '귀여운 슬라임과 함께 매일 계단 오르기 습관을 만들어보세요.',
+    images: ['/promo/og-image.png'],
   },
 };
 
